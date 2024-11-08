@@ -154,11 +154,22 @@ class Save {
           XmlElement(XmlName('v'), [], [XmlText(value.value ? '1' : '0')]),
         ];
       case ImageCellValue():
-        // TODO: Handle this case.
-        throw "Image writing not implemented";
+        final imagePath = _saveImage(value.value);
+        children = [
+          XmlElement(XmlName('v'), [], [XmlText(imagePath)])
+        ];
     }
 
     return XmlElement(XmlName('c'), attributes, children);
+  }
+
+  String _saveImage(Uint8List imageData) {
+    final directory = Directory.systemTemp;
+    final fileName = 'image_${DateTime.now().millisecondsSinceEpoch}.png';
+    final imagePath = '${directory.path}/$fileName';
+    final file = File(imagePath);
+    file.writeAsBytesSync(imageData);
+    return imagePath;  // Return the path of the saved image
   }
 
   /// Create a new row in the sheet.
